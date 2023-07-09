@@ -21,7 +21,8 @@ alias Mix.Tasks.Compile.App
         Mongo,
         name: :mongo,
         database: Application.get_env(:todo_app, :database),
-        pool_size: Application.get_env(:todo_app, :pool_size)
+        pool_size: Application.get_env(:todo_app, :pool_size),
+        seed: ["localhost:27017"]
       }
     ]
 

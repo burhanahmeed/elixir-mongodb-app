@@ -94,6 +94,47 @@ defmodule TodoApp.Router do
     end
   end
 
+  put "/users/:id" do
+    case Mongo.find_one_and_update(
+      :mongo,
+      "users_customer",
+      %{_id: BSON.ObjectId.decode!(id)},
+      %{
+        "$set":
+          conn.body_params
+          |> Map.take(["firstname", "lastname", "email", "password"])
+          |> Enum.into(%{}, fn {key, value} -> {"#{key}", value} end)
+      },
+      return_document: :after
+    ) do
+      {:ok, doc} ->
+        case doc do
+          nil ->
+            send_resp(conn, 404, "Not Found")
+
+          _ ->
+            post =
+              JSON.normaliseMongoId(doc)
+              |> Jason.encode!()
+
+            conn
+            |> put_resp_content_type("application/json")
+            |> send_resp(200, post)
+        end
+
+      {:error, _} ->
+        send_resp(conn, 500, "Something went wrong")
+    end
+  end
+
+  delete "/users/:id" do
+    Mongo.delete_one!(:mongo, "users_customer", %{_id: BSON.ObjectId.decode!(id)})
+
+    conn
+    |> put_resp_content_type("application/json")
+    |> send_resp(200, Jason.encode!(%{id: id}))
+  end
+
   # Fallback handler when there was no match
   match _ do
     send_resp(conn, 404, "Not Found")
