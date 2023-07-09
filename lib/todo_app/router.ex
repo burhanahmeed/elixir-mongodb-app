@@ -41,6 +41,59 @@ defmodule TodoApp.Router do
     |> send_resp(200, users)
   end
 
+  post "/users" do
+    case conn.body_params do
+      %{
+        "firstname" => firstname,
+        "lastname" => lastname,
+        "email" => email,
+        "password" => password
+      } ->
+        case Mongo.insert_one(:mongo, "users_customer", %{
+          "firstname" => firstname,
+          "lastname" => lastname,
+          "email" => email,
+          "password" => password
+        }) do
+          {:ok, user} ->
+            record = Mongo.find_one(:mongo, "users_customer", %{_id: user.inserted_id})
+
+            user_record = JSON.normaliseMongoId(record)
+            |> Jason.encode!()
+
+            conn
+            |> put_resp_content_type("application/json")
+            |> send_resp(200, user_record)
+
+          {:error, _} ->
+              send_resp(conn, 500, "Something went wrong")
+        end
+        _->
+          send_resp(conn, 400, '')
+    end
+  end
+
+  get "/users/:id" do
+    doc = Mongo.find_one(:mongo, "users_customer", %{_id: BSON.ObjectId.decode!(id)})
+
+    case doc do
+      nil ->
+        send_resp(conn, 404, "Not Found")
+
+      %{} ->
+        user =
+          JSON.normaliseMongoId(doc)
+          |> Jason.encode!()
+
+        conn
+        |> put_resp_content_type("application/json")
+        |> send_resp(200, user)
+
+      {:error, _} ->
+        send_resp(conn, 500, "Something went wrong")
+    end
+  end
+
   # Fallback handler when there was no match
   match _ do
     send_resp(conn, 404, "Not Found")
