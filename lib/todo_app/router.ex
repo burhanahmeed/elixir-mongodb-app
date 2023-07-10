@@ -191,6 +191,39 @@ defmodule TodoApp.Router do
     end
   end
 
+  put "/issues/:id" do
+    case MyXQL.query(:myxql, "SELECT * FROM good_issues WHERE id = #{id} LIMIT 1") do
+      {:ok, %{rows: [result]}} ->
+        updated_fields = conn.body_params
+        |> Map.take(["gr_id", "item_id", "nama_gi", "nama_user"])
+
+        set_clause = Enum.map(updated_fields, fn {column, value} ->
+          "#{column} = '#{value}'" end)
+        |> Enum.join(", ")
+
+        query = "UPDATE good_issues SET #{set_clause} WHERE id = #{id}"
+
+        case MyXQL.query(:myxql, query) do
+          {:ok, _} ->
+            conn
+            |> put_resp_content_type("application/json")
+            |> send_resp(200, "Updated")
+
+          {:error, _reason} ->
+            send_resp(conn, 500, "Something went wrong")
+        end
+
+      {:ok, %{rows: []}} ->
+        send_resp(conn, 404, "Issue not found")
+
+      {:ok, _result} ->
+        send_resp(conn, 500, "Unexpected query result")
+
+      {:error, _reason} ->
+        send_resp(conn, 500, "Something went wrong")
+    end
+  end
+
   # Fallback handler when there was no match
   match _ do
     send_resp(conn, 404, "Not Found")
