@@ -22,7 +22,13 @@ alias Mix.Tasks.Compile.App
         name: :mongo,
         database: Application.get_env(:todo_app, :database),
         pool_size: Application.get_env(:todo_app, :pool_size),
-        seed: ["localhost:27017"]
+        seed: [Application.get_env(:todo_app, :database_url)]
+      },
+      {
+        MyXQL,
+        name: :myxql,
+        username: "root",
+        database: "dev_mdom"
       }
     ]
 
