@@ -181,7 +181,7 @@ defmodule TodoApp.Router do
         query = "INSERT INTO good_issues (item_id, gr_id, nama_gi, nama_user) VALUES (#{item_id}, #{gr_id}, '#{nama_gi}', '#{nama_user}')"
         case MyXQL.query(:myxql, query) do
           {:ok, _} ->
-            send_resp(conn, 201, "Issue created")
+            send_resp(conn, 201, Jason.encode!(%{message: "issue created"}))
 
           {:error, _reason} ->
             send_resp(conn, 500, "Something went wrong")
@@ -208,6 +208,32 @@ defmodule TodoApp.Router do
             conn
             |> put_resp_content_type("application/json")
             |> send_resp(200, "Updated")
+
+          {:error, _reason} ->
+            send_resp(conn, 500, "Something went wrong")
+        end
+
+      {:ok, %{rows: []}} ->
+        send_resp(conn, 404, "Issue not found")
+
+      {:ok, _result} ->
+        send_resp(conn, 500, "Unexpected query result")
+
+      {:error, _reason} ->
+        send_resp(conn, 500, "Something went wrong")
+    end
+  end
+
+  delete "/issues/:id" do
+    case MyXQL.query(:myxql, "SELECT * FROM good_issues WHERE id = #{id} LIMIT 1") do
+      {:ok, %{rows: [result]}} ->
+        query = "DELETE FROM good_issues WHERE id = #{id}"
+
+        case MyXQL.query(:myxql, query) do
+          {:ok, _} ->
+            conn
+            |> put_resp_content_type("application/json")
+            |> send_resp(200, "Issue deleted")
 
           {:error, _reason} ->
             send_resp(conn, 500, "Something went wrong")
