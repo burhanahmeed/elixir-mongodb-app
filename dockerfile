@@ -1,6 +1,6 @@
 FROM elixir:1.15.2-alpine as build
 
-ADD ./app
+ADD . /app
 WORKDIR /app
 
 RUN mix local.hex --force && \
