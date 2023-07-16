@@ -6,8 +6,8 @@ WORKDIR /app
 RUN mix local.hex --force && \
     mix local.rebar --force && \
     mix deps.get && \
-    mix deps.compile
+    mix compile
 
 EXPOSE 8081
 
-CMD ["mix"]
+CMD ["mix", "run", "--no-halt"]
