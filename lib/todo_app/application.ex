@@ -27,8 +27,10 @@ alias Mix.Tasks.Compile.App
       {
         MyXQL,
         name: :myxql,
-        username: "root",
-        database: "dev_mdom"
+        host: Application.get_env(:todo_app, :mysql_host),
+        username: Application.get_env(:todo_app, :mysql_username),
+        password: Application.get_env(:todo_app, :mysql_password),
+        database: Application.get_env(:todo_app, :mysql_database),
       }
     ]
 
