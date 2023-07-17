@@ -17,12 +17,15 @@ RUN MIX_ENV=prod mix release
 # Final stage for the production release
 FROM alpine:3.14 AS run_stage
 
-RUN apk add --no-cache openssl ncurses-libs
+RUN apk add --no-cache bash openssl ncurses-libs
 
 WORKDIR /app
 
 # Copy the release from the build stage
-COPY --from=build /app .
+COPY --from=build /app/_build/prod/rel/todo_app .
+
+# Copy the Erlang runtime files
+COPY --from=build /app/_build/prod/rel/todo_app/erts-* /app/erts/
 
 # Set the environment variables
 ENV REPLACE_OS_VARS=true
@@ -31,5 +34,4 @@ ENV MIX_ENV=prod
 
 EXPOSE 80
 
-# CMD ["_build/prod/rel/todo_app/bin/todo_app", "start"]
-CMD ["mix", "run", "--no-halt"]
+CMD ["bin/todo_app", "start"]
