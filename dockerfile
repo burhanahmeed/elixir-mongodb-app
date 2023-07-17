@@ -22,7 +22,7 @@ RUN apk add --no-cache openssl ncurses-libs
 WORKDIR /app
 
 # Copy the release from the build stage
-COPY --from=build /app/_build/prod/rel/todo_app .
+COPY --from=build /build /app
 
 # Set the environment variables
 ENV REPLACE_OS_VARS=true
@@ -31,4 +31,4 @@ ENV MIX_ENV=prod
 
 EXPOSE 80
 
-CMD ["bin/todo_app", "start"]
+CMD ["./prod/rel/todo_app/bin/todo_app", "start"]
