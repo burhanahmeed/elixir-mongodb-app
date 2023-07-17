@@ -22,7 +22,7 @@ RUN apk add --no-cache openssl ncurses-libs
 WORKDIR /app
 
 # Copy the release from the build stage
-COPY --from=build /build /app
+COPY --from=build /app .
 
 # Set the environment variables
 ENV REPLACE_OS_VARS=true
