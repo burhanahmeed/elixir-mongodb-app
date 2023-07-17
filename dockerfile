@@ -15,14 +15,14 @@ COPY config/prod.env.exs config/
 RUN MIX_ENV=prod mix release
 
 # Final stage for the production release
-FROM alpine:3.14
+FROM alpine:3.14 as release
 
 RUN apk add --no-cache openssl ncurses-libs
 
 WORKDIR /app
 
 # Copy the release from the build stage
-COPY --from=build /build /app
+COPY --from=build /app/_build .
 
 # Set the environment variables
 ENV REPLACE_OS_VARS=true
