@@ -17,7 +17,7 @@ RUN MIX_ENV=prod mix release
 # Final stage for the production release
 FROM alpine:3.14
 
-RUN apk add --no-cache openssl
+RUN apk add --no-cache openssl ncurses-libs
 
 WORKDIR /app
 
