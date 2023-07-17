@@ -31,4 +31,5 @@ ENV MIX_ENV=prod
 
 EXPOSE 80
 
-CMD ["_build/prod/rel/todo_app/bin/todo_app", "start"]
+# CMD ["_build/prod/rel/todo_app/bin/todo_app", "start"]
+CMD ["ls"]
