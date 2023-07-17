@@ -22,7 +22,7 @@ RUN apk add --no-cache openssl
 WORKDIR /app
 
 # Copy the release from the build stage
-COPY --from=build /app/_build/prod/rel/myapp .
+COPY --from=build /app/_build/prod/rel/todo-app .
 
 # Set the environment variables
 ENV REPLACE_OS_VARS=true
