@@ -14,10 +14,6 @@ COPY config/prod.env.exs config/
 # Build the release
 RUN MIX_ENV=prod mix release
 
-# Copy the application files to a separate directory
-RUN mkdir /build && \
-    cp -R _build/prod /build
-
 # Final stage for the production release
 FROM alpine:3.14 AS run_stage
 
@@ -35,4 +31,4 @@ ENV MIX_ENV=prod
 
 EXPOSE 80
 
-CMD ["./rel/todo_app/bin/todo_app", "start"]
+CMD ["_build/prod/rel/todo_app/bin/todo_app", "start"]
