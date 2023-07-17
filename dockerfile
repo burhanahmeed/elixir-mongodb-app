@@ -1,4 +1,4 @@
-FROM elixir:latest as build
+FROM elixir:1.15.1 as build
 
 ADD . /app
 WORKDIR /app
@@ -14,15 +14,19 @@ COPY config/prod.env.exs config/
 # Build the release
 RUN MIX_ENV=prod mix release
 
+# Copy the application files to a separate directory
+RUN mkdir /build && \
+    cp -R _build/prod /build
+
 # Final stage for the production release
-FROM alpine:latest AS run_stage
+FROM alpine:3.14 AS run_stage
 
 RUN apk add --no-cache openssl ncurses-libs
 
 WORKDIR /app
 
 # Copy the release from the build stage
-COPY --from=build /app/_build .
+COPY --from=build /build /app
 
 # Set the environment variables
 ENV REPLACE_OS_VARS=true
