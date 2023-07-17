@@ -1,4 +1,4 @@
-FROM elixir:1.15.1 as build
+FROM elixir:alpine as build
 
 ADD . /app
 WORKDIR /app
@@ -15,7 +15,7 @@ COPY config/prod.env.exs config/
 RUN MIX_ENV=prod mix release
 
 # Final stage for the production release
-FROM bitwalker/alpine-elixir:latest AS run_stage
+FROM alpine:latest AS run_stage
 
 RUN apk add --no-cache openssl ncurses-libs
 
@@ -23,9 +23,6 @@ WORKDIR /app
 
 # Copy the release from the build stage
 COPY --from=build /app/_build .
-
-RUN chown -R default: ./prod
-USER default
 
 # Set the environment variables
 ENV REPLACE_OS_VARS=true
