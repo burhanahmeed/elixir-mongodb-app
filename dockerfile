@@ -1,4 +1,4 @@
-FROM elixir:alpine as build
+FROM elixir:latest as build
 
 ADD . /app
 WORKDIR /app
