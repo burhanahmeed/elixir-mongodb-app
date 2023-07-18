@@ -1,37 +1,17 @@
-FROM elixir:1.15.1 as build
-
-ADD . /app
+FROM elixir:1.15.1 as builder
 WORKDIR /app
-
-RUN mix local.hex --force && \
-    mix local.rebar --force && \
-    mix deps.get && \
-    mix compile
-
-# Copy the production.env.exs file to the container
+COPY . .
+ENV MIX_ENV=prod
+COPY lib ./lib
+COPY mix.exs .
+COPY mix.lock .
 COPY config/prod.env.exs config/
 
-# Build the release
-RUN MIX_ENV=prod mix release
+RUN mix local.rebar --force \
+    && mix local.hex --force \
+    && mix deps.get \
+    && mix release
 
-# Final stage for the production release
-FROM alpine:3.14 AS run_stage
-
-RUN apk add --no-cache bash openssl ncurses-libs
-
-WORKDIR /app
-
-# Copy the release from the build stage
-COPY --from=build /app/_build/prod/rel/todo_app .
-
-# Copy the Erlang runtime files
-COPY --from=build /app/_build/prod/rel/todo_app/erts-* /app/erts/
-
-# Set the environment variables
-ENV REPLACE_OS_VARS=true
-ENV PORT=80
-ENV MIX_ENV=prod
-
-EXPOSE 80
-
-CMD ["bin/todo_app", "start"]
+# ---- Application Stage ----
+# RUN apk add --no-cache --update bash openssl
+CMD ["_build/prod/rel/todo_app/bin/todo_app", "start"]
