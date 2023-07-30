@@ -22,7 +22,10 @@ alias Mix.Tasks.Compile.App
         name: :mongo,
         database: Application.get_env(:todo_app, :database),
         pool_size: Application.get_env(:todo_app, :pool_size),
-        hostname: Application.get_env(:todo_app, :database_url)
+        hostname: Application.get_env(:todo_app, :database_url),
+        username: Application.get_env(:todo_app, :mysql_username),
+        password: Application.get_env(:todo_app, :mysql_password),
+        auth_source: "admin",
       },
       {
         MyXQL,
