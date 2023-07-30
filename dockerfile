@@ -14,4 +14,6 @@ RUN mix local.rebar --force \
 
 # ---- Application Stage ----
 # RUN apk add --no-cache --update bash openssl
+EXPOSE 8081
+
 CMD ["_build/prod/rel/todo_app/bin/todo_app", "start"]
