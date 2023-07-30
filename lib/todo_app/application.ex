@@ -26,6 +26,8 @@ alias Mix.Tasks.Compile.App
         username: Application.get_env(:todo_app, :mysql_username),
         password: Application.get_env(:todo_app, :mysql_password),
         auth_source: "admin",
+        timeout: 15_000,
+        pool_timeout: 15_000,
       },
       {
         MyXQL,
