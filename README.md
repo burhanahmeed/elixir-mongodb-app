@@ -24,3 +24,5 @@ be found at <https://hexdocs.pm/todo_app>.
 running
 
 `mix run --no-halt`
+
+`iex -S mix`
